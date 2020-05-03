@@ -8,41 +8,35 @@ class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            type: " ",
+            type: options.length ? options[0].type : "",
             operaton: " ",
             add: false,
             remove: false
         }
     }
 
-    handleSubmit = (e) => {
-        alert('Your favorite flavor is: ' + this.state.type);
-        e.preventDefault();
-    }
+
 
     handleChange = (e) => {
         this.setState({ type: e.target.value });
     }
 
     handleRadio = (e) => {
-        console.log("---------------", e)
         this.setState({ operaton: e })
     }
 
     handleResponse = async (response) => {
-        console.log('-------------', response);
         if (response.ok) return response.json();
 
     }
 
     radioSubmit = () => {
-        // this.setState({ operation: e.target.value });
         let baseUrl = `http://localhost:8080/command/${this.state.type}/${this.state.operaton}`;
 
         fetch(baseUrl)
             .then(this.handleResponse)
             .then(res => {
-                alert('Operation successfull', res)
+                alert(`${this.state.type} is set to  ${this.state.operaton}`)
             })
 
             .catch(e => {
@@ -81,7 +75,7 @@ class Home extends Component {
     }
 
     removeMachine = (e) => {
-        this.state.add ?
+        this.state.remove ?
             this.setState({
                 remove: false
             }) : this.setState({
@@ -109,59 +103,67 @@ class Home extends Component {
     }
 
     render() {
+
         return (
-            <div>
+            <div className="card p-4 col-6 self-center" >
                 <form onSubmit={this.handleSubmit}>
-                    <label> Pick a Appliance to control:
-                    <br /><br />
-                        <select value={this.state.type} onChange={this.handleChange}>
+                    {this.state.type ? <label> <h2 style={{ 'font-family': 'Open Sans' }}>Pick an Appliance to control</h2>
+
+                        <select className="form-control" selected value={this.state.type} onChange={this.handleChange}>
                             {
                                 options.map((n, i) =>
                                     <option key={i}>{n.type}</option>
                                 )
                             }
                         </select>
-                    </label>
+                    </label> : <label><h1>Please Add Some Appliance</h1></label>}
+
                     <br /><br />
                 </form>
 
-                {this.state.type && <div>
+                {
+                    this.state.type && <div>
 
-                    <RadioGroup onChange={this.handleRadio} vertical>
-                        <RadioButton value="on">
-                            ON
+                        <RadioGroup onChange={this.handleRadio} vertical>
+                            <RadioButton value="on">
+                                ON
                         </RadioButton>
-                        <RadioButton value="off">
-                            OFF
+                            <RadioButton value="off">
+                                OFF
                         </RadioButton>
-                    </RadioGroup>
+                        </RadioGroup>
 
-                    <button type="submit" onClick={this.radioSubmit}>Submit</button>
+                        <button type="submit" className="mt-2 btn btn-primary" onClick={this.radioSubmit}>Submit</button>
 
-                </div>}
+                    </div>
+                }
                 <br /><br />
-                <button type="submit" onClick={this.addMachine}>Add Machine</button>
-                {this.state.add && <form onSubmit={this.addMachineDetail}>
-                    <ui>
-                        <li>
-                            <label>Machine Type : </label>
-                            <input type='text' name="type" /><br />
-                        </li>
-                        <li>
-                            <label>Brand : </label>
-                            <input type='text' name="brand" /><br />
-                        </li>
-                    </ui>
-                    <button type="submit" >Add</button>
-                </form>}
+                <button type="submit" className="mt-2 btn btn-primary" onClick={this.addMachine}>Add Machine</button>
+                {
+                    this.state.add && <form onSubmit={this.addMachineDetail}>
+                        <ui>
+                            <li>
+                                <label style={{ 'font-family': 'Open Sans', 'font-size': '25px' }}>Machine Type </label>&nbsp;
+                                <input type='text' className="form-control" name="type" /><br />
+                            </li>
+                            <li>
+                                <label style={{ 'font-family': 'Open Sans', 'font-size': '25px' }}>Brand </label>&nbsp;
+                                <input type='text' className="form-control" name="brand" /><br />
+                            </li>
+                        </ui>
+                        <button type="submit" className="mt-2 btn btn-primary" >Add</button>
+                    </form>
+                }
                 &nbsp;
-                <button type="submit" onClick={this.removeMachine}>Remove Machine</button>
+                {options.length > 0 && <button type="submit" className="mt-2 btn btn-primary" onClick={this.removeMachine}>Remove Machine</button>}
 
-                {this.state.remove && <form onSubmit={this.removeMachineDetail}>
-                    <label>Machine Type : </label>
-                    <input type='text' name="type" /><br />
-                    <button type="submit" >Remove</button>
-                </form>}
+                {
+                    this.state.remove && <form onSubmit={this.removeMachineDetail}>
+                        <label style={{ 'font-family': 'Open Sans', 'font-size': '25px' }}>Machine Type </label>&nbsp;
+                        <input type='text' name="type" className="form-control" /><br />
+                        <button type="submit" className="mt-2 btn btn-primary">Remove</button>
+                    </form>
+                }
 
             </div >
         );
